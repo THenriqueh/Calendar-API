@@ -13,7 +13,7 @@ public interface CategoryRepositoryPort {
 
     List<Category> findAllByUserId(Long userId);
 
-    void deleteByIdAndUserId(Long id, Long userId);
-
     boolean existsByNameAndUserId(String name, Long userId);
+
+    void deleteByIdAndUserId(Long id, Long userId);
 }

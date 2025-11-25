@@ -14,6 +14,8 @@ public interface SpringDataFinanceTransactionRepository
 
     void deleteByIdAndUserId(Long id, Long userId);
 
+    List<FinanceTransactionEntity> findByUserIdOrderByDateDesc(Long userId);
+
     List<FinanceTransactionEntity> findByUserIdAndDateBetween(Long userId, LocalDate start, LocalDate end);
 
     List<FinanceTransactionEntity> findByUserIdAndSeriesGroupId(Long userId, String seriesGroupId);

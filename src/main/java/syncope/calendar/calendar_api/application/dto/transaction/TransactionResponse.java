@@ -1,4 +1,4 @@
-package syncope.calendar.calendar_api.application.dto;
+package syncope.calendar.calendar_api.application.dto.transaction;
 
 import java.math.BigDecimal;
 

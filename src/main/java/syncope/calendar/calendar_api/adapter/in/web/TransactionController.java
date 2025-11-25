@@ -3,13 +3,12 @@ package syncope.calendar.calendar_api.adapter.in.web;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import syncope.calendar.calendar_api.application.dto.TransactionFilterCommand;
-import syncope.calendar.calendar_api.application.dto.TransactionFilterRequest;
-import syncope.calendar.calendar_api.application.dto.TransactionRequest;
-import syncope.calendar.calendar_api.application.dto.TransactionResponse;
-import syncope.calendar.calendar_api.application.port.in.*;
+import syncope.calendar.calendar_api.application.dto.transaction.TransactionFilterCommand;
+import syncope.calendar.calendar_api.application.dto.transaction.TransactionFilterRequest;
+import syncope.calendar.calendar_api.application.dto.transaction.TransactionRequest;
+import syncope.calendar.calendar_api.application.dto.transaction.TransactionResponse;
+import syncope.calendar.calendar_api.application.port.in.TransactionUseCase;
 
 import java.util.List;
 
@@ -18,68 +17,56 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionController {
 
-    private final CreateTransactionUseCase createTransactionUseCase;
-    private final CreateRecurringTransactionUseCase createRecurringTransactionUseCase;
-    private final ListTransactionsUseCase listTransactionsUseCase;
-    private final TogglePaidUseCase togglePaidUseCase;
-    private final TogglePlannedUseCase togglePlannedUseCase;
+    private final TransactionUseCase transactionUseCase;
+
+    // por enquanto sem auth, userId fixo
+    private Long getCurrentUserId() {
+        return 1L;
+    }
 
     @GetMapping
     public ResponseEntity<List<TransactionResponse>> list(
-            TransactionFilterRequest filter,
-            @AuthenticationPrincipal(expression = "id") Long userId
+            TransactionFilterRequest filter
     ) {
-        // enquanto você não tiver auth, pode passar um userId fixo (ex.: 1L)
-        if (userId == null) {
-            userId = 1L;
-        }
-
+        Long userId = getCurrentUserId();
         TransactionFilterCommand command = TransactionFilterCommand.fromRequest(filter);
-        var result = listTransactionsUseCase.list(userId, command);
+        var result = transactionUseCase.list(userId, command);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping
     public ResponseEntity<TransactionResponse> create(
-            @Valid @RequestBody TransactionRequest request,
-            @AuthenticationPrincipal(expression = "id") Long userId
+            @Valid @RequestBody TransactionRequest request
     ) {
-        if (userId == null) userId = 1L;
-
-        var response = createTransactionUseCase.create(userId, request);
+        Long userId = getCurrentUserId();
+        var response = transactionUseCase.create(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/recurring")
     public ResponseEntity<TransactionResponse> createRecurring(
-            @Valid @RequestBody TransactionRequest request,
-            @AuthenticationPrincipal(expression = "id") Long userId
+            @Valid @RequestBody TransactionRequest request
     ) {
-        if (userId == null) userId = 1L;
-
-        var response = createRecurringTransactionUseCase.createSeries(userId, request);
+        Long userId = getCurrentUserId();
+        var response = transactionUseCase.createRecurring(userId, request);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/toggle-paid")
     public ResponseEntity<TransactionResponse> togglePaid(
-            @PathVariable Long id,
-            @AuthenticationPrincipal(expression = "id") Long userId
+            @PathVariable Long id
     ) {
-        if (userId == null) userId = 1L;
-
-        var response = togglePaidUseCase.toggle(userId, id);
+        Long userId = getCurrentUserId();
+        var response = transactionUseCase.togglePaid(userId, id);
         return ResponseEntity.ok(response);
     }
 
     @PatchMapping("/{id}/toggle-planned")
     public ResponseEntity<TransactionResponse> togglePlanned(
-            @PathVariable Long id,
-            @AuthenticationPrincipal(expression = "id") Long userId
+            @PathVariable Long id
     ) {
-        if (userId == null) userId = 1L;
-
-        var response = togglePlannedUseCase.toggle(userId, id);
+        Long userId = getCurrentUserId();
+        var response = transactionUseCase.togglePlanned(userId, id);
         return ResponseEntity.ok(response);
     }
 }

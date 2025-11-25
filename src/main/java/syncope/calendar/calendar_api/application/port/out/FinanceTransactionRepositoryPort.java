@@ -1,6 +1,6 @@
 package syncope.calendar.calendar_api.application.port.out;
 
-import syncope.calendar.calendar_api.application.dto.TransactionFilterCommand;
+import syncope.calendar.calendar_api.application.dto.transaction.TransactionFilterCommand;
 import syncope.calendar.calendar_api.domain.model.FinanceTransaction;
 
 import java.time.LocalDate;
@@ -12,6 +12,8 @@ public interface FinanceTransactionRepositoryPort {
     FinanceTransaction save(FinanceTransaction tx);
 
     List<FinanceTransaction> saveAll(List<FinanceTransaction> list);
+
+    List<FinanceTransaction> findByUserId(Long userId);
 
     Optional<FinanceTransaction> findByIdAndUserId(Long id, Long userId);
 
@@ -29,4 +31,6 @@ public interface FinanceTransactionRepositoryPort {
     );
 
     List<FinanceTransaction> findBySeriesGroupIdAndUserId(String seriesGroupId, Long userId);
+
+    void delete(FinanceTransaction financeTransaction);
 }

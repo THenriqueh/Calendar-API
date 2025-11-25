@@ -1,4 +1,4 @@
-package syncope.calendar.calendar_api.application.dto;
+package syncope.calendar.calendar_api.application.dto.transaction;
 
 public record TransactionFilterRequest(
         String status,           // all, pending, paid, planned

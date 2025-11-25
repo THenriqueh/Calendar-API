@@ -4,21 +4,27 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .csrf(csrf -> csrf.disable())                 // API REST -> desabilita CSRF
-                .sessionManagement(sm ->                      // sem sessão/estado
-                        sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll()                 // libera tudo (temporário)
+                        .requestMatchers("/**").permitAll()  // <-- Muito importante
+                        .anyRequest().permitAll()
                 )
-                .httpBasic(Customizer.withDefaults())         // opcional: basic habilitado
-                .build();
+                .securityMatcher("/**")  // <-- força matcher direto
+                .httpBasic(httpBasic -> httpBasic.disable()) // <-- desabilita basic auth
+                .formLogin(form -> form.disable()) // <-- desabilita form login
+                .logout(logout -> logout.disable()); // <-- desabilita logout
+
+        return http.build();
     }
 }
